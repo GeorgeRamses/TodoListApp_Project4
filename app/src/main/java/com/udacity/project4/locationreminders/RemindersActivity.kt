@@ -7,8 +7,11 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.navigation.fragment.NavHostFragment
 import com.udacity.project4.R
+
 //import kotlinx.android.synthetic.main.activity_reminders.*
 
 
@@ -26,6 +29,7 @@ class RemindersActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
+                val nav_host_fragment = findViewById<FragmentContainerView>(R.id.nav_host_fragment)
                 (nav_host_fragment as NavHostFragment).navController.popBackStack()
                 return true
             }
