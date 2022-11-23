@@ -11,9 +11,10 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.2.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.21"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
         classpath 'com.google.gms:google-services:4.3.14'
+        classpath 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -52,7 +53,7 @@ ext {
     dexMakerVersion = '2.12.1'
     coroutinesVersion = '1.2.1'
     roomVersion = '2.2.5'
-    koinVersion = '2.0.1'
+    koinVersion = '2.2.3'
     truthVersion = '0.44'
     junitVersion = '4.12'
     androidXTestCoreVersion = '1.2.0-beta01'
