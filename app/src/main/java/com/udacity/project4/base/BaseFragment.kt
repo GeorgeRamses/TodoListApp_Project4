@@ -10,6 +10,8 @@ import com.google.android.material.snackbar.Snackbar
  * Base Fragment to observe on the common LiveData objects
  */
 abstract class BaseFragment : Fragment() {
+    abstract val REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE: Any
+
     /**
      * Every fragment has to have an instance of a view model that extends from the BaseViewModel
      */
