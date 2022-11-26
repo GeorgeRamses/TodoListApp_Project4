@@ -41,7 +41,7 @@ private const val REQUEST_TURN_DEVICE_LOCATION_ON = 29
 private const val LOCATION_PERMISSION_INDEX = 0
 private const val BACKGROUND_LOCATION_PERMISSION_INDEX = 1
 
-class SelectLocationFragment : BaseFragment() {
+class SelectLocationFragment : BaseFragment(),OnMapReadyCallback {
 
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by inject()
@@ -50,7 +50,7 @@ class SelectLocationFragment : BaseFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_select_location, container, false)
 
@@ -73,30 +73,30 @@ class SelectLocationFragment : BaseFragment() {
     }
 
     @Deprecated("Deprecated in Java")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (
-            grantResults.isEmpty() ||
-            grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED ||
-            (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE &&
-                    grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] ==
-                    PackageManager.PERMISSION_DENIED))
-        {
-            Snackbar.make(
-                binding.map,
-                R.string.permission_denied_explanation,
-                Snackbar.LENGTH_INDEFINITE
-            )
-                .setAction(R.string.settings) {
-                    startActivity(Intent().apply {
-                        action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                        data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    })
-                }.show()
-        } else {
-
-        }
-    }
+//    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+//        if (
+//            grantResults.isEmpty() ||
+//            grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED ||
+//            (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE &&
+//                    grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] ==
+//                    PackageManager.PERMISSION_DENIED))
+//        {
+//            Snackbar.make(
+//                binding.map,
+//                R.string.permission_denied_explanation,
+//                Snackbar.LENGTH_INDEFINITE
+//            )
+//                .setAction(R.string.settings) {
+//                    startActivity(Intent().apply {
+//                        action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+//                        data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+//                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//                    })
+//                }.show()
+//        } else {
+//
+//        }
+//    }
     private fun onLocationSelected() {
         //        TODO: When the user confirms on the selected location,
         //         send back the selected location details to the view model
@@ -167,6 +167,10 @@ class SelectLocationFragment : BaseFragment() {
         }
 
         else -> super.onOptionsItemSelected(item)
+    }
+
+    override fun onMapReady(p0: GoogleMap?) {
+        TODO("Not yet implemented")
     }
 
 

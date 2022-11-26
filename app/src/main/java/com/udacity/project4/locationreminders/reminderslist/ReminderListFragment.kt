@@ -20,12 +20,9 @@ class ReminderListFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding =
-            DataBindingUtil.inflate(
-                inflater,
-                R.layout.fragment_reminders, container, false
-            )
+    ): View {
+        binding =FragmentRemindersBinding.inflate(inflater)
+
         binding.viewModel = _viewModel
 
         setHasOptionsMenu(true)
