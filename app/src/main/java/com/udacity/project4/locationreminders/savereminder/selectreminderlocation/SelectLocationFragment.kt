@@ -8,25 +8,20 @@ import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.view.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.material.snackbar.Snackbar
-import com.udacity.project4.BuildConfig
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
@@ -34,6 +29,7 @@ import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
+import java.util.*
 
 private const val REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE = 33
 private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
@@ -41,7 +37,7 @@ private const val REQUEST_TURN_DEVICE_LOCATION_ON = 29
 private const val LOCATION_PERMISSION_INDEX = 0
 private const val BACKGROUND_LOCATION_PERMISSION_INDEX = 1
 
-class SelectLocationFragment : BaseFragment(),OnMapReadyCallback {
+class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by inject()
@@ -72,31 +68,32 @@ class SelectLocationFragment : BaseFragment(),OnMapReadyCallback {
         return binding.root
     }
 
-    @Deprecated("Deprecated in Java")
-//    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-//        if (
-//            grantResults.isEmpty() ||
-//            grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED ||
-//            (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE &&
-//                    grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] ==
-//                    PackageManager.PERMISSION_DENIED))
-//        {
-//            Snackbar.make(
-//                binding.map,
-//                R.string.permission_denied_explanation,
-//                Snackbar.LENGTH_INDEFINITE
-//            )
-//                .setAction(R.string.settings) {
-//                    startActivity(Intent().apply {
-//                        action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-//                        data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
-//                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-//                    })
-//                }.show()
-//        } else {
-//
-//        }
-//    }
+    /**   @Deprecated("Deprecated in Java")
+    //    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    //        if (
+    //            grantResults.isEmpty() ||
+    //            grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED ||
+    //            (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE &&
+    //                    grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] ==
+    //                    PackageManager.PERMISSION_DENIED))
+    //        {
+    //            Snackbar.make(
+    //                binding.map,
+    //                R.string.permission_denied_explanation,
+    //                Snackbar.LENGTH_INDEFINITE
+    //            )
+    //                .setAction(R.string.settings) {
+    //                    startActivity(Intent().apply {
+    //                        action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+    //                        data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+    //                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    //                    })
+    //                }.show()
+    //        } else {
+    //
+    //        }
+    //    }
+     **/
     private fun onLocationSelected() {
         //        TODO: When the user confirms on the selected location,
         //         send back the selected location details to the view model
@@ -169,9 +166,30 @@ class SelectLocationFragment : BaseFragment(),OnMapReadyCallback {
         else -> super.onOptionsItemSelected(item)
     }
 
-    override fun onMapReady(p0: GoogleMap?) {
-        TODO("Not yet implemented")
+    override fun onMapReady(googleMap: GoogleMap) {
+
+        val homLang = LatLng(0.0, 0.0)
+        val zoomLevel = 15f
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(homLang, zoomLevel))
+        googleMap.addMarker(
+            MarkerOptions().position(homLang)
+                .title("Marker")
+        )
+        setOnMapLongClick(googleMap)
     }
 
+    fun setOnMapLongClick(map: GoogleMap) {
+        map.setOnMapLongClickListener { latLng ->
+            val snippet =
+                String.format(
+                    Locale.getDefault(),
+                    "Lat: %1$.5f, Long: %2$.5f", latLng.latitude, latLng.longitude
+                )
+            map.addMarker(
+                MarkerOptions().position(latLng)
+                    .snippet(snippet)
+            )
+        }
+    }
 
 }
