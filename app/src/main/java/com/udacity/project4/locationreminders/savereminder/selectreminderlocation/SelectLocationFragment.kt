@@ -8,7 +8,9 @@ import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.*
 import androidx.core.app.ActivityCompat
@@ -22,6 +24,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.material.snackbar.Snackbar
+import com.udacity.project4.BuildConfig
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
@@ -47,9 +50,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_select_location, container, false)
-
+        binding = FragmentSelectLocationBinding.inflate(inflater)
         binding.viewModel = _viewModel
         binding.lifecycleOwner = this
 
@@ -60,44 +61,45 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 //        TODO: zoom to the user location after taking his permission
 //        TODO: add style to the map
 //        TODO: put a marker to location that the user selected
-
-
 //        TODO: call this function after the user confirms on the selected location
         onLocationSelected()
 
         return binding.root
     }
 
-    /**   @Deprecated("Deprecated in Java")
-    //    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-    //        if (
-    //            grantResults.isEmpty() ||
-    //            grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED ||
-    //            (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE &&
-    //                    grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] ==
-    //                    PackageManager.PERMISSION_DENIED))
-    //        {
-    //            Snackbar.make(
-    //                binding.map,
-    //                R.string.permission_denied_explanation,
-    //                Snackbar.LENGTH_INDEFINITE
-    //            )
-    //                .setAction(R.string.settings) {
-    //                    startActivity(Intent().apply {
-    //                        action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-    //                        data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
-    //                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-    //                    })
-    //                }.show()
-    //        } else {
-    //
-    //        }
-    //    }
-     **/
+
+    @Deprecated("Deprecated in Java")
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (
+            grantResults.isEmpty() ||
+            grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED ||
+            (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE &&
+                    grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] ==
+                    PackageManager.PERMISSION_DENIED)
+        ) {
+            Snackbar.make(
+                binding.map,
+                R.string.permission_denied_explanation,
+                Snackbar.LENGTH_INDEFINITE
+            )
+                .setAction(R.string.settings) {
+                    startActivity(Intent().apply {
+                        action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                        data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    })
+                }.show()
+        } else {
+
+        }
+    }
+
     private fun onLocationSelected() {
-        //        TODO: When the user confirms on the selected location,
-        //         send back the selected location details to the view model
-        //         and navigate back to the previous fragment to save the reminder and add the geofence
+        // TODO: When the user confirms on the selected location,
+        //  send back the selected location details to the view model
+        //  and navigate back to the previous fragment to save the reminder and add the geofence
+
+
     }
 
     @TargetApi(29)
@@ -105,14 +107,14 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         val foregroundLocationApproved = (
                 PackageManager.PERMISSION_GRANTED ==
                         ActivityCompat.checkSelfPermission(
-                            this.context!!,
+                            this.requireContext(),
                             Manifest.permission.ACCESS_FINE_LOCATION
                         ))
         val backgroundPermissionApproved =
             if (runningQOrLater) {
                 PackageManager.PERMISSION_GRANTED ==
                         ActivityCompat.checkSelfPermission(
-                            this.context!!, Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                            this.requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION
                         )
             } else {
                 true
@@ -168,7 +170,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
 
-        val homLang = LatLng(0.0, 0.0)
+        val homLang = LatLng(37.422160, -122.084270)
         val zoomLevel = 15f
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(homLang, zoomLevel))
         googleMap.addMarker(

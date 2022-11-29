@@ -26,7 +26,7 @@ class AuthenticationActivity : AppCompatActivity() {
             DataBindingUtil.setContentView(this, R.layout.activity_authentication)
 
         binding.btnLogin.setOnClickListener {
-            login()
+            // login()
         }
 
     }
@@ -38,30 +38,30 @@ class AuthenticationActivity : AppCompatActivity() {
     //https://github.com/firebase/FirebaseUI-Android/blob/master/auth/README.md#custom-layout
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == SIGN_IN_REQUEST_CODE) {
-            val response = IdpResponse.fromResultIntent(data)
-            if (resultCode == Activity.RESULT_OK) {
-                val intent = Intent(this, RemindersActivity::class.java)
-                startActivity(intent)
+    /**  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+    if (requestCode == SIGN_IN_REQUEST_CODE) {
+    val response = IdpResponse.fromResultIntent(data)
+    if (resultCode == Activity.RESULT_OK) {
+    val intent = Intent(this, RemindersActivity::class.java)
+    startActivity(intent)
 
-            } else {
+    } else {
 
-            }
-        }
     }
-
-    fun login() {
-        val provider = arrayListOf(
-            AuthUI.IdpConfig.EmailBuilder().build(), AuthUI.IdpConfig.GoogleBuilder().build()
-        )
-
-        startActivityForResult(
-            AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(provider).build(),
-            SIGN_IN_REQUEST_CODE
-        )
     }
+    }*/
+
+    /** fun login() {
+    val provider = arrayListOf(
+    AuthUI.IdpConfig.EmailBuilder().build(), AuthUI.IdpConfig.GoogleBuilder().build()
+    )
+
+    startActivityForResult(
+    AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(provider).build(),
+    SIGN_IN_REQUEST_CODE
+    )
+    }*/
+
 }
-
 

@@ -21,8 +21,7 @@ class SaveReminderFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding =
-            FragmentSaveReminderBinding.inflate(inflater)
+        binding = FragmentSaveReminderBinding.inflate(inflater)
 
         setDisplayHomeAsUpEnabled(true)
 
