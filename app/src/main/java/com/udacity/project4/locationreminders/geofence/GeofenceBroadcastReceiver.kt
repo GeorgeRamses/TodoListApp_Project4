@@ -3,6 +3,9 @@ package com.udacity.project4.locationreminders.geofence
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
+import com.google.android.gms.location.Geofence
+import com.google.android.gms.location.GeofencingEvent
 
 /**
  * Triggered by the Geofence.  Since we can have many Geofences at once, we pull the request
@@ -15,9 +18,29 @@ import android.content.Intent
  */
 
 class GeofenceBroadcastReceiver : BroadcastReceiver() {
+    private val TAG = "No Geofence"
     override fun onReceive(context: Context, intent: Intent) {
 
 //TODO: implement the onReceive method to receive the geofencing events at the background
+
+        val geofencingEvent = GeofencingEvent.fromIntent(intent)
+        if (geofencingEvent.hasError()) {
+            return
+        }
+        if (geofencingEvent.geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
+            val geofencesList = when {
+                geofencingEvent.triggeringGeofences.isNotEmpty() ->
+                    geofencingEvent.triggeringGeofences
+
+                else -> {
+                    Log.e(TAG, "No Geofence Trigger Found! Abort mission!")
+                    return
+                }
+            }
+            val geoTransition = GeofenceTransitionsJobIntentService()
+            geoTransition.sendNotification(geofencesList)
+
+        }
 
     }
 }

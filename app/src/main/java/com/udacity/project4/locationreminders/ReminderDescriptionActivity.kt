@@ -32,6 +32,9 @@ class ReminderDescriptionActivity : AppCompatActivity() {
             this,
             R.layout.activity_reminder_description
         )
+
+       val item=intent.getBundleExtra(EXTRA_ReminderDataItem)
+        binding.tvTitle.text=item!!.getString("title")
 //        TODO: Add the implementation of the reminder details
     }
 }

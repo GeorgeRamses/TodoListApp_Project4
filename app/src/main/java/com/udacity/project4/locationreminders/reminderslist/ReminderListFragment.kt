@@ -2,13 +2,11 @@ package com.udacity.project4.locationreminders.reminderslist
 
 import android.os.Bundle
 import android.view.*
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentRemindersBinding
+import com.udacity.project4.locationreminders.ReminderDescriptionActivity
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import com.udacity.project4.utils.setTitle
 import com.udacity.project4.utils.setup
@@ -22,7 +20,7 @@ class ReminderListFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding =FragmentRemindersBinding.inflate(inflater)
+        binding = FragmentRemindersBinding.inflate(inflater)
 
         binding.viewModel = _viewModel
 
@@ -61,6 +59,11 @@ class ReminderListFragment : BaseFragment() {
 
     private fun setupRecyclerView() {
         val adapter = RemindersListAdapter {
+            val intent = ReminderDescriptionActivity.newIntent(requireContext(), it)
+//                Intent(requireContext(), ReminderDescriptionActivity::class.java)
+            startActivity(intent)
+
+
         }
 
 //        setup the recycler view using the extension function

@@ -2,9 +2,11 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.app.Activity
+import android.app.Application
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
@@ -17,9 +19,7 @@ import android.view.*
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -29,22 +29,18 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.BuildConfig
+import com.udacity.project4.MyApp
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
-import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.geofence.GeofenceBroadcastReceiver
-import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
 import java.util.*
 
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
-    private val REQUEST_LOCATION_PERMISSION = 1
     private lateinit var map: GoogleMap
-    private lateinit var geofencingClient: GeofencingClient
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val TAG = SelectLocationFragment::class.java.simpleName
     private val runningQOrLater =
         android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
@@ -52,22 +48,13 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by inject()
     private lateinit var binding: FragmentSelectLocationBinding
-    private val geofencePendingIntent: PendingIntent by lazy {
-        val intent = Intent(this.requireContext(), GeofenceBroadcastReceiver::class.java)
-        intent.action = "ACTION_GEOFENCE_EVENT"
-        // Use FLAG_UPDATE_CURRENT so that you get the same pending intent back when calling
-        // addGeofences() and removeGeofences().
-        PendingIntent.getBroadcast(this.requireContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         binding = FragmentSelectLocationBinding.inflate(inflater)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         binding.viewModel = _viewModel
         binding.lifecycleOwner = this
-
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
 
@@ -135,8 +122,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     @TargetApi(29)
     private fun requestForegroundAndBackgroundLocationPermissions() {
-        if (foregroundAndBackgroundLocationPermissionApproved()){
-            map.isMyLocationEnabled=true
+        if (foregroundAndBackgroundLocationPermissionApproved()) {
             return
         }
 
@@ -168,22 +154,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 //        removeGeofences()
     }
 
-    private fun removeGeofences() {
-        if (!foregroundAndBackgroundLocationPermissionApproved()) {
-            return
-        }
-        geofencingClient.removeGeofences(geofencePendingIntent)?.run {
-            addOnSuccessListener {
-                // Geofences removed
-                Toast.makeText(context, "Geofences removed", Toast.LENGTH_SHORT)
-                    .show()
-            }
-            addOnFailureListener {
-                // Failed to remove geofences
-                Log.d(TAG, "Geofences not removed")
-            }
-        }
-    }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -238,78 +209,32 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                         this.requireActivity(),
                         REQUEST_TURN_DEVICE_LOCATION_ON
                     )
+
                 } catch (sendEx: IntentSender.SendIntentException) {
-                    Log.d(TAG, "Error geting location settings resolution: " + sendEx.message)
+                    Log.d(TAG, "Error getting location settings resolution: " + sendEx.message)
                 }
             } else {
                 Snackbar.make(
                     binding.root,
                     R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
                 ).setAction(android.R.string.ok) {
+
                     checkDeviceLocationSettingsAndStartGeofence()
+
                 }.show()
             }
         }
+
         locationSettingsResponseTask.addOnCompleteListener {
+            map.isMyLocationEnabled = true
             if (it.isSuccessful) {
 //                addGeofenceForClue()
             }
         }
     }
 
-    private fun addGeofenceForClue() {
-        val latitude = 0.616016
-        val longitude = 34.521816
-        val radius = 100f
+    @SuppressLint("UseRequireInsteadOfGet")
 
-        val geofence = Geofence.Builder()
-            .setRequestId("entry.key")
-            .setCircularRegion(latitude, longitude, radius)
-            .setExpirationDuration(Geofence.NEVER_EXPIRE)
-            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-            .build()
-
-        val geofenceRequest = GeofencingRequest.Builder()
-            .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
-            .addGeofence(geofence)
-            .build()
-        geofencingClient.removeGeofences(geofencePendingIntent)?.run {
-            // Regardless of success/failure of the removal, add the new geofence
-            addOnCompleteListener {
-                // Add the new geofence request with the new geofence
-                if (ActivityCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-
-                    return@addOnCompleteListener
-                }
-                geofencingClient.addGeofences(geofenceRequest, geofencePendingIntent)?.run {
-                    addOnSuccessListener {
-                        // Geofences added.
-                        Toast.makeText(
-                            context, "geofences_added",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                        Log.e("Add Geofence", geofence.requestId)
-
-                    }
-                    addOnFailureListener {
-                        // Failed to add geofences.
-                        Toast.makeText(
-                            requireContext(), R.string.geofences_not_added,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        if ((it.message != null)) {
-                            Log.w(TAG, it.message!!)
-                        }
-                    }
-                }
-            }
-        }
-    }
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -358,7 +283,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             .image(BitmapDescriptorFactory.fromResource(R.drawable.map))
             .position(homeLatLng, overlaySize)
         map.addGroundOverlay(googleOverlay)
-        requestForegroundAndBackgroundLocationPermissions()
+        checkDeviceLocationSettingsAndStartGeofence()
         setMapLongClick(map)
         setPoiClick(map)
         setMapStyle(map)
@@ -374,9 +299,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             )
             poiMarker.showInfoWindow()
             _viewModel.reminderSelectedLocationStr.value = poi.name
-            _viewModel.latitude.value=poi.latLng.latitude
-            _viewModel.longitude.value=poi.latLng.longitude
-            findNavController().popBackStack(R.id.saveReminderFragment,false)
+            _viewModel.latitude.value = poi.latLng.latitude
+            _viewModel.longitude.value = poi.latLng.longitude
+            findNavController().popBackStack(R.id.saveReminderFragment, false)
         }
     }
 
