@@ -83,7 +83,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_TURN_DEVICE_LOCATION_ON) {
             // We don't rely on the result code, but just check the location setting again
-            checkD  qeviceLocationSettingsAndStartGeofence(false)
+            checkDeviceLocationSettingsAndStartGeofence(false)
         }
     }
 
