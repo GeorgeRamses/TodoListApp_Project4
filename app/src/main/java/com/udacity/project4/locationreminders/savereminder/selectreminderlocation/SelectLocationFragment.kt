@@ -4,9 +4,6 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.app.Application
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
@@ -16,9 +13,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -29,11 +24,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.BuildConfig
-import com.udacity.project4.MyApp
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
-import com.udacity.project4.locationreminders.geofence.GeofenceBroadcastReceiver
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
@@ -73,14 +66,24 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     override fun onStart() {
         super.onStart()
-        checkPermissionsAndStartGeofencing()
+
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            checkPermissionsAndStartGeofencing()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_TURN_DEVICE_LOCATION_ON) {
             // We don't rely on the result code, but just check the location setting again
-            checkDeviceLocationSettingsAndStartGeofence(false)
+            checkD  qeviceLocationSettingsAndStartGeofence(false)
         }
     }
 
@@ -142,19 +145,16 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         Log.d(TAG, "Request foreground only location permission")
         ActivityCompat.requestPermissions(
-            this.requireActivity(),
+            requireActivity(),
             permissionsArray,
             resultCode
         )
     }
 
-
     override fun onDestroy() {
         super.onDestroy()
 //        removeGeofences()
     }
-
-
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -183,7 +183,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     })
                 }.show()
         } else {
-            checkDeviceLocationSettingsAndStartGeofence()
+            requestForegroundAndBackgroundLocationPermissions()
 //            enableMyLocation()
         }
     }
@@ -226,15 +226,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
 
         locationSettingsResponseTask.addOnCompleteListener {
-            map.isMyLocationEnabled = true
             if (it.isSuccessful) {
-//                addGeofenceForClue()
             }
         }
     }
 
     @SuppressLint("UseRequireInsteadOfGet")
-
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -283,7 +280,20 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             .image(BitmapDescriptorFactory.fromResource(R.drawable.map))
             .position(homeLatLng, overlaySize)
         map.addGroundOverlay(googleOverlay)
-        checkDeviceLocationSettingsAndStartGeofence()
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestForegroundAndBackgroundLocationPermissions()
+        } else {
+            checkDeviceLocationSettingsAndStartGeofence()
+        }
+
+        map.isMyLocationEnabled = true
         setMapLongClick(map)
         setPoiClick(map)
         setMapStyle(map)
