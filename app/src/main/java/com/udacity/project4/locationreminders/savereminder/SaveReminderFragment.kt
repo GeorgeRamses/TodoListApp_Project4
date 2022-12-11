@@ -42,6 +42,7 @@ class SaveReminderFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSaveReminderBinding.inflate(inflater)
+        geofencingClient = LocationServices.getGeofencingClient(requireContext())
 
         setDisplayHomeAsUpEnabled(true)
 
@@ -53,7 +54,6 @@ class SaveReminderFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
-        geofencingClient = LocationServices.getGeofencingClient(requireContext())
 
         binding.selectLocation.setOnClickListener {
             _viewModel.navigationCommand.value =
@@ -76,18 +76,18 @@ class SaveReminderFragment : BaseFragment() {
 
     private fun addGeofence(reminderDataItem: ReminderDataItem) {
 
-        geofenceList.add(
+        val geofence =
             Geofence.Builder()
                 .setRequestId(reminderDataItem.id)
                 .setCircularRegion(reminderDataItem.latitude!!, reminderDataItem.longitude!!, 100f)
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
                 .build()
-        )
+
 
         val geofenceRequest = GeofencingRequest.Builder()
             .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
-            .addGeofences(geofenceList)
+            .addGeofence(geofence)
             .build()
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
