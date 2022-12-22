@@ -19,14 +19,14 @@ class FakeDataSource(var reminders: MutableList<ReminderDTO>? = mutableListOf())
     }
 
     override suspend fun getReminderById(reminderId: String): ReminderDTO? {
-        reminders?.let { r ->
-            r.forEach {
-                if (it.id == reminderId) {
-                    return it
-                }
+        var res: ReminderDTO? = null
+        reminders?.forEach {
+            if (it.id == reminderId) {
+                res = it
+                return@forEach
             }
         }
-        throw Exception("not found")
+        return res
     }
 
     override suspend fun deleteAllReminders() {
