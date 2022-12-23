@@ -53,13 +53,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-//        TODO: add the map setup implementation
-//        TODO: zoom to the user location after taking his permission
-//        TODO: add style to the map
-//        TODO: put a marker to location that the user selected
-
-//        TODO: call this function after the user confirms on the selected location
-
 
         return binding.root
     }
@@ -94,14 +87,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             requestForegroundAndBackgroundLocationPermissions()
         }
     }
-
-    private fun onLocationSelected() {
-
-        //        TODO: When the user confirms on the selected location,
-        //         send back the selected location details to the view model
-        //         and navigate back to the previous fragment to save the reminder and add the geofence
-    }
-
 
     @TargetApi(29)
     private fun foregroundAndBackgroundLocationPermissionApproved(): Boolean {

@@ -1,4 +1,3 @@
 <resources>
-<!--    TODO: Before you run your application, you need a Google Maps API key.-->
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyCJwTCdOqWaQmAHvFx4jwVWncgB9dd4r8c</string>
 </resources>

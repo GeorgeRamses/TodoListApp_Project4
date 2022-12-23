@@ -2,8 +2,8 @@ package com.udacity.project4.locationreminders.data
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
+import com.udacity.project4.FakeDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
-import com.udacity.project4.locationreminders.data.local.RemindersDao
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,7 +26,6 @@ class RemindersLocalRepositoryTest {
     private var remindersLocal = listOf(reminder1, reminder2)
 
     private lateinit var reminderRepository: RemindersLocalRepository
-    private lateinit var database: RemindersDao
     private lateinit var dataSource: FakeDataSource
 
 
@@ -39,6 +38,7 @@ class RemindersLocalRepositoryTest {
 
     @Test
     fun getReminders() = runBlocking {
+
         val reminders = reminderRepository.getReminders()
         val remindersTest = Result.success(remindersLocal)
         assertThat(reminders, IsEqual(remindersTest))

@@ -22,8 +22,6 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
     private val TAG = "Geofence"
     override fun onReceive(context: Context, intent: Intent) {
 
-//TODO: implement the onReceive method to receive the geofencing events at the background
-
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
         if (geofencingEvent.hasError()) {
             val errorMessage =GeofenceStatusCodes.getStatusCodeString(geofencingEvent.errorCode)
