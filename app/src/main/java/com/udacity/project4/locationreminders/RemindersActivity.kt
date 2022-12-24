@@ -20,9 +20,9 @@ class RemindersActivity : AppCompatActivity() {
         setContentView(R.layout.activity_reminders)
     }
 
-    override fun onBackPressed() {
-
-    }
+//    override fun onBackPressed() {
+//
+//    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {

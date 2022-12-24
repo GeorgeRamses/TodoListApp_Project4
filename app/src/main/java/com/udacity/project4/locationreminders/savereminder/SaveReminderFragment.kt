@@ -76,18 +76,18 @@ class SaveReminderFragment : BaseFragment() {
 
     private fun addGeofence(reminderDataItem: ReminderDataItem) {
 
-        val geofence =
+         geofenceList.add(
             Geofence.Builder()
                 .setRequestId(reminderDataItem.id)
                 .setCircularRegion(reminderDataItem.latitude!!, reminderDataItem.longitude!!, 100f)
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-                .build()
+                .build())
 
 
         val geofenceRequest = GeofencingRequest.Builder()
             .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
-            .addGeofence(geofence)
+            .addGeofences(geofenceList)
             .build()
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),

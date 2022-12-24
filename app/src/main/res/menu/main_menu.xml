@@ -5,4 +5,5 @@
         android:id="@+id/logout"
         android:title="@string/logout"
         app:showAsAction="always" />
+    <item android:title="Delete All" android:id="@+id/delete_all"/>
 </menu>

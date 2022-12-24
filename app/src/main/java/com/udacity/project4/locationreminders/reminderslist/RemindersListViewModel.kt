@@ -20,8 +20,7 @@ class RemindersListViewModel(
      * Get all the reminders from the DataSource and add them to the remindersList to be shown on the UI,
      * or show error if any
      */
-    fun
-            loadReminders() {
+    fun loadReminders() {
         showLoading.value = true
         viewModelScope.launch {
             //interacting with the dataSource has to be through a coroutine
@@ -43,8 +42,9 @@ class RemindersListViewModel(
                     })
                     remindersList.value = dataList
                 }
+
                 is Result.Error ->
-                    showSnackBar.value = result.message
+                    showSnackBar.value = result.message!!
             }
 
             //check if no data has to be shown
@@ -57,5 +57,9 @@ class RemindersListViewModel(
      */
     private fun invalidateShowNoData() {
         showNoData.value = remindersList.value == null || remindersList.value!!.isEmpty()
+    }
+
+    fun deleteAll() = viewModelScope.launch {
+        dataSource.deleteAllReminders()
     }
 }

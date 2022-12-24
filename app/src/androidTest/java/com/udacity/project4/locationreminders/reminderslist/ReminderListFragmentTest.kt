@@ -32,6 +32,8 @@ class ReminderListFragmentTest {
 
     @Before
     fun init() {
+        val reminder1 = ReminderDTO("reminder1", "Desc1", "location1", 1.0, 1.0)
+        reminders.add(reminder1)
         dataSource = FakeDataSource(reminders)
         viewModel = RemindersListViewModel(Application(), dataSource)
     }
@@ -51,7 +53,6 @@ class ReminderListFragmentTest {
 
     @Test
     fun ErrMessage() {
-
         viewModel.loadReminders()
         assertThat(viewModel.showNoData.value, `is`(true))
     }

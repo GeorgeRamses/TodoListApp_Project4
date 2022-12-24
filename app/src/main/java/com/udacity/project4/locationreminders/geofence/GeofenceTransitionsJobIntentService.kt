@@ -36,7 +36,7 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
 
     override fun onHandleWork(intent: Intent) {
         val geofencePendingIntent: PendingIntent by lazy {
-            val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
+//            val mIntent = Intent(this, GeofenceBroadcastReceiver::class.java)
 //            intent.action = ACTION_GEOFENCE_EVENT
             // Use FLAG_UPDATE_CURRENT so that you get the same pending intent back when calling
             // addGeofences() and removeGeofences().
