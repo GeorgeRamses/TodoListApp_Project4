@@ -1,11 +1,9 @@
-package com.udacity.project4.locationreminders.data
+package com.udacity.project4.locationreminders.data.local
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import com.udacity.project4.locationreminders.FakeReminderDao
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result.Success
-import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking

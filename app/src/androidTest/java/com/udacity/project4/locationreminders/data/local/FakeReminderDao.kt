@@ -1,7 +1,6 @@
-package com.udacity.project4.locationreminders
+package com.udacity.project4.locationreminders.data.local
 
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
-import com.udacity.project4.locationreminders.data.local.RemindersDao
 
 class FakeReminderDao(val reminderList: MutableList<ReminderDTO>? = mutableListOf()) : RemindersDao {
     override suspend fun getReminders(): List<ReminderDTO> {
