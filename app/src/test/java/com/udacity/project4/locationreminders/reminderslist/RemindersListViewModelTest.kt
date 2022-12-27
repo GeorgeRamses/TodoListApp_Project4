@@ -6,7 +6,9 @@ import com.udacity.project4.FakeDataSource
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.Assert.assertEquals
+import kotlinx.coroutines.runBlocking
+import org.hamcrest.CoreMatchers.notNullValue
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,7 +31,8 @@ class RemindersListViewModelTest {
     private val reminder1 = ReminderDTO("reminder1", "Desc1", "location1", 1.0, 1.0)
     private val reminder2 = ReminderDTO("reminder2", "Desc2", "location2", 2.0, 2.0)
     private val reminder3 = ReminderDTO("reminder3", "Desc3", "location3", 3.0, 3.0)
-    private val reminders = mutableListOf(reminder1)
+    private val reminders = mutableListOf<ReminderDTO>()
+    private val emptyReminders = mutableListOf<ReminderDTO>()
 
     @Before
     fun init() {
@@ -38,9 +41,17 @@ class RemindersListViewModelTest {
     }
 
     @Test
-    fun testViewModel() {
+    fun testReminderListEmpty() {
         viewModel.loadReminders()
-        val remindersList = reminders.map {
+        assertEquals(viewModel.showNoData, true)
+    }
+
+    @Test
+    fun testViewModel() {
+        reminders.add(reminder1)
+        viewModel.loadReminders()
+        val reminderList = viewModel.remindersList.value
+        val dataList = reminders.map {
             ReminderDataItem(
                 title = it.title,
                 description = it.description,
@@ -50,7 +61,9 @@ class RemindersListViewModelTest {
                 id = it.id
             )
         }
-        assertEquals(viewModel.remindersList.value, remindersList)
+
+        assertEquals(reminderList, dataList)
     }
+
 
 }

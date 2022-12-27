@@ -7,18 +7,18 @@ class FakeReminderDao(val reminderList: MutableList<ReminderDTO>? = mutableListO
         reminderList?.let {
             return it.toList()
         }
-        throw Exception("No Data found")
+        return emptyList()
     }
 
     override suspend fun getReminderById(reminderId: String): ReminderDTO? {
-        reminderList?.let {
+        reminderList?.let { it ->
             it.forEach {
                 if (it.id == reminderId) {
                     return it
                 }
             }
         }
-        throw Exception("Reminder Not Found")
+        return null
     }
 
     override suspend fun saveReminder(reminder: ReminderDTO) {

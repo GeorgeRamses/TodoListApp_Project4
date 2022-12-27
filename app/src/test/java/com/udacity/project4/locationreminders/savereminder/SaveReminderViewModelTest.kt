@@ -36,7 +36,30 @@ class SaveReminderViewModelTest {
     }
 
     @Test
-    fun testViewModel() = runBlocking {
+    fun testValidate() {
+        val remindersList = newreminders.map {
+            ReminderDataItem(
+                title = it.title,
+                description = it.description,
+                location = it.location,
+                latitude = it.latitude,
+                longitude = it.longitude,
+                id = it.id
+            )
+        }
+
+        assertEquals(viewModel.validateEnteredData(remindersList[0]), true)
+    }
+
+    @Test
+    fun testNotValidateData() {
+        val remindersList = ReminderDataItem(null, null, null, null, null)
+
+        assertEquals(viewModel.validateEnteredData(remindersList), false)
+    }
+
+    @Test
+    fun testSave() {
 
         val remindersList = newreminders.map {
             ReminderDataItem(
@@ -49,8 +72,20 @@ class SaveReminderViewModelTest {
             )
         }
         viewModel.validateAndSaveReminder(remindersList[0])
-
         assertEquals(dataReminders[2], reminder3)
+        assertEquals(viewModel.showToast, "Reminder Saved")
+    }
+
+    @Test
+    fun testDataCleared() {
+        viewModel.onClear()
+
+        assertEquals(viewModel.reminderTitle.value, null)
+        assertEquals(viewModel.reminderDescription.value, null)
+        assertEquals(viewModel.reminderSelectedLocationStr.value, null)
+        assertEquals(viewModel.selectedPOI.value, null)
+        assertEquals(viewModel.latitude.value, null)
+        assertEquals(viewModel.longitude.value, null)
     }
 
 }
