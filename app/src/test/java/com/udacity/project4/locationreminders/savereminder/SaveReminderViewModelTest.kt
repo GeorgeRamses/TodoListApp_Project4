@@ -1,13 +1,14 @@
 package com.udacity.project4.locationreminders.savereminder
 
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.udacity.project4.FakeDataSource
-import com.udacity.project4.MyApp
+import com.udacity.project4.R
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
+import com.udacity.project4.utils.SingleLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -32,7 +33,7 @@ class SaveReminderViewModelTest {
     @Before
     fun init() {
         dataSource = FakeDataSource(dataReminders)
-        viewModel = SaveReminderViewModel(MyApp(), dataSource)
+        viewModel = SaveReminderViewModel(ApplicationProvider.getApplicationContext(), dataSource)
     }
 
     @Test
@@ -52,10 +53,20 @@ class SaveReminderViewModelTest {
     }
 
     @Test
-    fun testNotValidateData() {
-        val remindersList = ReminderDataItem(null, null, null, null, null)
+    fun shouldReturnErrorTitle() {
+        val missingTitle = ReminderDataItem(null, null, "null", null, null)
+        var validation = viewModel.validateEnteredData(missingTitle)
+        val snackBarValue: SingleLiveEvent<Int> = viewModel.showSnackBarInt
+        assertEquals(snackBarValue.value, (R.string.err_enter_title))
+        assertEquals(validation, false)
+    }
 
-        assertEquals(viewModel.validateEnteredData(remindersList), false)
+    @Test
+    fun shouldReturnErrorLocation() {
+        val missingLocation = ReminderDataItem("null", null, null, null, null)
+        val validation = viewModel.validateEnteredData(missingLocation)
+        assertEquals(viewModel.showSnackBarInt.value, (R.string.err_select_location))
+        assertEquals(validation, false)
     }
 
     @Test
@@ -71,10 +82,12 @@ class SaveReminderViewModelTest {
                 id = it.id
             )
         }
-        viewModel.validateAndSaveReminder(remindersList[0])
+        viewModel.saveReminder(remindersList[0])
+
         assertEquals(dataReminders[2], reminder3)
-        assertEquals(viewModel.showToast, "Reminder Saved")
+        assertEquals(viewModel.showToast.value, ("Reminder Saved !"))
     }
+
 
     @Test
     fun testDataCleared() {

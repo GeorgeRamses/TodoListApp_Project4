@@ -3,11 +3,8 @@ package com.udacity.project4.locationreminders.reminderslist
 import android.app.Application
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.udacity.project4.FakeDataSource
-import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
-import org.hamcrest.CoreMatchers.notNullValue
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -24,7 +21,7 @@ class RemindersListViewModelTest {
 //    @get:Rule
 //    var mainCoroutineRule = MainCoroutineRule()
 
-    private lateinit var dataSource: ReminderDataSource
+    private lateinit var dataSource: FakeDataSource
     private lateinit var viewModel: RemindersListViewModel
 
 
@@ -34,6 +31,7 @@ class RemindersListViewModelTest {
     private val reminders = mutableListOf<ReminderDTO>()
     private val emptyReminders = mutableListOf<ReminderDTO>()
 
+
     @Before
     fun init() {
         dataSource = FakeDataSource(reminders)
@@ -41,13 +39,13 @@ class RemindersListViewModelTest {
     }
 
     @Test
-    fun testReminderListEmpty() {
+    fun testReminderListIsEmpty() {
         viewModel.loadReminders()
-        assertEquals(viewModel.showNoData, true)
+        assertEquals(viewModel.showNoData.value, true)
     }
 
     @Test
-    fun testViewModel() {
+    fun check_loading() {
         reminders.add(reminder1)
         viewModel.loadReminders()
         val reminderList = viewModel.remindersList.value
@@ -65,5 +63,12 @@ class RemindersListViewModelTest {
         assertEquals(reminderList, dataList)
     }
 
+    @Test
+    fun shouldReturnError() {
+        dataSource.setReturnError(true)
+        viewModel.loadReminders()
 
+        assertEquals(viewModel.showSnackBar.value , "Test Error")
+
+    }
 }
