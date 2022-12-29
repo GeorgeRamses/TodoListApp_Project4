@@ -5,9 +5,9 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.udacity.project4.locationreminders.RemindersActivity
@@ -79,19 +79,21 @@ class RemindersActivityTest :
 
         repository.saveReminder(
             ReminderDTO(
-                "Title1", "Dscrip1", "Location1", 1.0, 1.0
+                "Title1", "Describe1", "Location1", 1.0, 1.0
             )
         )
         val senario = ActivityScenario.launch(RemindersActivity::class.java)
-        onView(withId(R.id.title)).check(matches(withText("newTitle")))
-        onView(withId(R.id.description)).check(matches(withText("newDscrip")))
-        onView(withId(R.id.location)).check(matches(withText("newLocation")))
+        onView(withId(R.id.title)).check(matches(withText("Title1")))
+        onView(withId(R.id.description)).check(matches(withText("Describe1")))
+        onView(withId(R.id.location)).check(matches(withText("Location1")))
 
         onView(withId(R.id.addReminderFAB)).perform(click())
-        onView(withId(R.id.reminderTitle)).check(matches(withText("newTitle")))
-        onView(withId(R.id.reminderDescription)).check(matches(withText("newDescripe")))
-        onView(withId(R.id.selectLocation)).check(matches(withText("newLocation")))
+        onView(withId(R.id.reminderTitle)).perform(replaceText("newTitle"))
+        onView(withId(R.id.reminderDescription)).perform(replaceText("newDescribe"))
+        onView(withId(R.id.selectLocation)).perform(replaceText("newLocation"))
         onView(withId(R.id.saveReminder)).perform(click())
+
+        onView(withText("newTitle")).check(matches(isDisplayed()))
 
         senario.close()
     }

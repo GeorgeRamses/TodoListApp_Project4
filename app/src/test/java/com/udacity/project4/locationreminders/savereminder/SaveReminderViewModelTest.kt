@@ -1,17 +1,18 @@
 package com.udacity.project4.locationreminders.savereminder
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.udacity.project4.FakeDataSource
 import com.udacity.project4.R
-import com.udacity.project4.locationreminders.MainDispatcherRule
+import com.udacity.project4.locationreminders.MainCoroutineRule
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.utils.SingleLiveEvent
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.pauseDispatcher
+import kotlinx.coroutines.test.resumeDispatcher
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -22,12 +23,16 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class SaveReminderViewModelTest {
 
+    @ExperimentalCoroutinesApi
     @get:Rule
-    val mainDispatcherRule = MainDispatcherRule()
+    val mainCoroutineRule = MainCoroutineRule()
 
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
 
-    //TODO: provide testing to the SaveReminderView and its live data objects
-
+    // provide testing to the SaveReminderView and its live data objects
+    private lateinit var dataSource: ReminderDataSource
+    private lateinit var viewModel: SaveReminderViewModel
 
     private val reminder1 = ReminderDTO("reminder1", "Desc1", "location1", 1.0, 1.0)
     private val reminder2 = ReminderDTO("reminder2", "Desc2", "location2", 2.0, 2.0)
@@ -35,9 +40,13 @@ class SaveReminderViewModelTest {
     private val newreminders = mutableListOf(reminder3)
     private val dataReminders = mutableListOf(reminder1, reminder2)
 
-    private val dataSource: ReminderDataSource = FakeDataSource(dataReminders)
-    private val viewModel: SaveReminderViewModel =
-        SaveReminderViewModel(ApplicationProvider.getApplicationContext(), dataSource)
+
+    @Before
+    fun init() {
+        dataSource = FakeDataSource(dataReminders)
+        viewModel =
+            SaveReminderViewModel(ApplicationProvider.getApplicationContext(), dataSource)
+    }
 
     @Test
     fun testValidate() {
@@ -91,7 +100,7 @@ class SaveReminderViewModelTest {
     }
 
     @Test
-    fun testLoading() = runTest {
+    fun testLoading() {
         val remindersList = newreminders.map {
             ReminderDataItem(
                 title = it.title,
@@ -102,8 +111,13 @@ class SaveReminderViewModelTest {
                 id = it.id
             )
         }
-
+        mainCoroutineRule.pauseDispatcher()
         viewModel.saveReminder(remindersList[0])
+
+        assertEquals(viewModel.showLoading.value, true)
+        mainCoroutineRule.resumeDispatcher()
+        assertEquals(viewModel.showLoading.value, false)
+
     }
 
 
