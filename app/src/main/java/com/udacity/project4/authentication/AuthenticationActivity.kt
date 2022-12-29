@@ -31,7 +31,6 @@ class AuthenticationActivity : AppCompatActivity() {
         binding.btnLogin.setOnClickListener {
             login()
         }
-
     }
 
     //https://github.com/firebase/FirebaseUI-Android/blob/master/auth/README.md#custom-layout
@@ -56,7 +55,6 @@ class AuthenticationActivity : AppCompatActivity() {
         val provider = arrayListOf(
             AuthUI.IdpConfig.EmailBuilder().build(), AuthUI.IdpConfig.GoogleBuilder().build()
         )
-
         startActivityForResult(
             AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(provider).build(),
             SIGN_IN_REQUEST_CODE

@@ -1,5 +1,9 @@
 package com.udacity.project4.locationreminders.data.local
 
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
@@ -43,8 +47,5 @@ class RemindersLocalRepositoryTest {
         reminders = reminderRepository.getReminders() as Success
         assertEquals(reminders.data, remindersLocal)
     }
-
-
-
 
 }

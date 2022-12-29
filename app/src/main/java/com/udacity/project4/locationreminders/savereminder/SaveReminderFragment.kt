@@ -4,7 +4,9 @@ import android.Manifest
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +17,8 @@ import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.snackbar.Snackbar
+import com.udacity.project4.BuildConfig
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
@@ -76,13 +80,14 @@ class SaveReminderFragment : BaseFragment() {
 
     private fun addGeofence(reminderDataItem: ReminderDataItem) {
 
-         geofenceList.add(
+        geofenceList.add(
             Geofence.Builder()
                 .setRequestId(reminderDataItem.id)
                 .setCircularRegion(reminderDataItem.latitude!!, reminderDataItem.longitude!!, 100f)
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-                .build())
+                .build()
+        )
 
 
         val geofenceRequest = GeofencingRequest.Builder()
@@ -101,29 +106,48 @@ class SaveReminderFragment : BaseFragment() {
                 .show()
             return
         }
-        geofencingClient.addGeofences(geofenceRequest, geofencePendingIntent)?.run {
-            addOnSuccessListener {
-                // Geofences added.
-                Toast.makeText(
-                    requireContext(), "Geofences added",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
-                Log.e("Add Geofence", geofenceList[0].requestId)
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Snackbar.make(
+                binding.root,
+                R.string.permission_denied_explanation, Snackbar.LENGTH_INDEFINITE
+            )
+                .setAction(R.string.settings) {
+                    // Displays App settings screen.
+                    startActivity(Intent().apply {
+                        action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                        data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    })
+                }.show()
+        } else {
 
-            }
-            addOnFailureListener {
-                // Failed to add geofences.
-                Toast.makeText(
-                    requireContext(), R.string.geofences_not_added,
-                    Toast.LENGTH_SHORT
-                ).show()
-                if ((it.message != null)) {
-                    Log.w(TAG, it.message!!)
+            geofencingClient.addGeofences(geofenceRequest, geofencePendingIntent)?.run {
+                addOnSuccessListener {
+                    // Geofences added.
+                    Toast.makeText(
+                        requireContext(), "Geofences added",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                    Log.e("Add Geofence", geofenceList[0].requestId)
+
+                }
+                addOnFailureListener {
+                    // Failed to add geofences.
+                    Toast.makeText(
+                        requireContext(), R.string.geofences_not_added,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    if ((it.message != null)) {
+                        Log.w(TAG, it.message!!)
+                    }
                 }
             }
         }
-
     }
 
     private fun removeGeofence() {
