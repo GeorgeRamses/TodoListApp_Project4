@@ -48,7 +48,7 @@ class ReminderListFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         //load the reminders list on the ui
-        _viewModel.loadReminders()
+//        _viewModel.loadReminders()
     }
 
     private fun navigateToAddReminder() {
@@ -83,7 +83,6 @@ class ReminderListFragment : BaseFragment() {
 
             R.id.delete_all -> {
                 _viewModel.deleteAll()
-                _viewModel.loadReminders()
             }
         }
         return super.onOptionsItemSelected(item)

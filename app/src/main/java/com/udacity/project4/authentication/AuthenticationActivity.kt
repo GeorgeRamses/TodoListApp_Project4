@@ -35,9 +35,9 @@ class AuthenticationActivity : AppCompatActivity() {
 
     //https://github.com/firebase/FirebaseUI-Android/blob/master/auth/README.md#custom-layout
 
-    override fun onBackPressed() {
-        finish()
-    }
+//    override fun onBackPressed() {
+//        finish()
+//    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -55,6 +55,7 @@ class AuthenticationActivity : AppCompatActivity() {
         val provider = arrayListOf(
             AuthUI.IdpConfig.EmailBuilder().build(), AuthUI.IdpConfig.GoogleBuilder().build()
         )
+
         startActivityForResult(
             AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(provider).build(),
             SIGN_IN_REQUEST_CODE
